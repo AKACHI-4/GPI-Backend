@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 from flask_cors import CORS
 import yaml
 from flask_pymongo import PyMongo 
@@ -52,16 +52,11 @@ def classRoom():
     result = class_data.find()
     data = list(result)
 
-    # Convert data to YAML
-    yaml_data = yaml.dump(data)
+    # convert objectID to string repre. 
+    for item in data :
+        item['_id'] = str(item['_id'])
 
-    # Set response headers to indicate YAML content
-    headers = {
-        'Content-Type': 'text/yaml',
-        'Content-Disposition': 'attachment; filename="classDetails.yaml"'
-    }
-
-    return Response(yaml_data, headers=headers)
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run(debug=True)    
