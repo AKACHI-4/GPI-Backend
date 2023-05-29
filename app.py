@@ -3,6 +3,7 @@ from flask_cors import CORS
 import yaml
 from flask_pymongo import PyMongo 
 from bson import json_util
+from haversine import haversine, Unit
 
 app = Flask(__name__)
 app.config['YAML_AS_TEXT'] = True
@@ -15,16 +16,8 @@ def classdata():
     if request.data:
         data = yaml.safe_load(request.data)
 
-        admin_id = data.get('admin_id')
-
         classdata = db.get_collection('class_data')
         classdata.insert_one(data)
-
-        studentdata = db.get_collection('student_data')
-        studentdata.update_many(
-            {'admin_id': {'$exists': False}},  
-            {'$set': {'admin_id': admin_id}} 
-        )
 
         return { 'Output' : 'Data inserted successfully' }
     else:
@@ -36,7 +29,20 @@ def studentdata():
         data = yaml.safe_load(request.data)
 
         classdata = db.get_collection('class_data')
-        data['admin_id'] = classdata.find_one({})['admin_id']
+        class_info = classdata.find_one({})
+        data['admin_id'] = class_info['admin_id']
+
+        radius = float(class_info['radius'])
+
+        admin_coord = (class_info['latitude'], class_info['longitude'])
+        user_coord = (data['latitude'], data['longitude'])        
+
+        distance = float(haversine(admin_coord, user_coord, unit=Unit.METERS))
+
+        print(radius)
+        print(distance)
+
+        data['present'] = distance < radius
 
         studentdata = db.get_collection('student_data')
         studentdata.insert_one(data)
