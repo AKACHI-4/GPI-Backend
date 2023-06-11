@@ -50,19 +50,30 @@ def studentdata():
     else:
         return { 'Error' : 'No data provided' }, 400
 
-@app.route('/class-room', methods=['POST', 'GET'])
-def classRoom():
+@app.route('/GetClassData', methods=['GET'])
+def GetClassData():
     class_data = db.get_collection('class_data')
 
-    # Retrieve data from the collection
     result = class_data.find()
     data = list(result)
 
-    # convert objectID to string repre. 
     for item in data :
         item['_id'] = str(item['_id'])
 
     return jsonify(data)
+
+@app.route('/GetStudentData', methods=['GET'])
+def GetStudentData():
+    student_data = db.get_collection('student_data')
+
+    result = student_data.find()
+    data = list(result)
+
+    for item in data :
+        item['_id'] = str(item['_id'])
+
+    return jsonify(data)
+
 
 if __name__ == "__main__":
     app.run(debug=True)    
