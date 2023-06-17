@@ -4,12 +4,19 @@ import yaml
 from flask_pymongo import PyMongo 
 from bson import json_util
 from haversine import haversine, Unit
+import uuid
 
 app = Flask(__name__)
 app.config['YAML_AS_TEXT'] = True
 app.config["MONGO_URI"] = "mongodb://localhost:27017/admin"
 mongo = PyMongo(app)
 db = mongo.db
+
+@app.route('/generate-link/<string:admin_id>', methods=['GET'])
+def generate_link(admin_id):
+    unique = str(uuid.uuid4())
+    unique_link = f"localhost:3000/student-form/{admin_id}/{unique}"
+    return { 'link' : unique_link }
 
 @app.route('/class-data', methods=['POST', 'GET'])
 def classdata():
@@ -23,14 +30,13 @@ def classdata():
     else:
         return { 'Error' : 'No data provided' }, 400
 
-@app.route('/student-data', methods=['POST', 'GET'])    
-def studentdata():
+@app.route('/student-data/<string:admin_id>/<string:uuid>', methods=['POST', 'GET'])    
+def studentdata(admin_id, uuid):
     if request.data:
         data = yaml.safe_load(request.data)
 
         classdata = db.get_collection('class_data')
         class_info = classdata.find_one({})
-        data['admin_id'] = class_info['admin_id']
 
         radius = float(class_info['radius'])
 
@@ -38,9 +44,6 @@ def studentdata():
         user_coord = (data['latitude'], data['longitude'])        
 
         distance = float(haversine(admin_coord, user_coord, unit=Unit.METERS))
-
-        print(radius)
-        print(distance)
 
         data['present'] = distance < radius
 
@@ -73,7 +76,6 @@ def GetStudentData():
         item['_id'] = str(item['_id'])
 
     return jsonify(data)
-
 
 if __name__ == "__main__":
     app.run(debug=True)    
