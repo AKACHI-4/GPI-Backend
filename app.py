@@ -57,7 +57,7 @@ def studentdata(admin_id, uuid):
 def GetClassData():
     class_data = db.get_collection('class_data')
 
-    result = class_data.find()
+    result = class_data.find_one()
     data = list(result)
 
     for item in data :
