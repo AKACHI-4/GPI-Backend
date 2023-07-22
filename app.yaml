@@ -1,6 +1,0 @@
-runtime: python311
-entrypoint: gunicorn -b :$PORT app:app
-
-env_variables:
-  GOOGLE_APPLICATION_CREDENTIALS: "C:/Users/Adarsh Rawat/Downloads/user-location-tracker-368607-2d96ca648339.json"
-  
