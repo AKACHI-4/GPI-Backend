@@ -12,10 +12,16 @@
     source venv/bin/activate
 ```
 
-## To Run Flask Server
+## To Run Python Server
 
 ```md
     python app.py
+```
+
+## To Run Flask Server
+
+```md
+    flask run
 ```
 
 ## To run on waitress-server
