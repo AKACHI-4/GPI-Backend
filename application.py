@@ -27,7 +27,7 @@ def home():
 unique_id = str(uuid.uuid4())
 @application.route('/generate-link/<string:admin_id>', methods=['GET'])
 def generate_link(admin_id):
-    unique_link = f"https://gpi.software/student-form/{admin_id}/{unique_id}"
+    unique_link = f"https://gpi-alpha.vercel.app/student-form/{admin_id}/{unique_id}"
     return {'link': unique_link}
 
 @application.route('/class-data', methods=['POST', 'GET'])
